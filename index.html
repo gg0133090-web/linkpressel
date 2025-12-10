@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acessar no Telegram — @familiadopecadobot</title>
+  <meta name="robots" content="noindex,nofollow" />
+
+  <style>
+    :root { color-scheme: light dark; }
+    html,body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; }
+    .wrap { min-height: 100%; display: grid; place-items: center; padding: 24px; }
+    .card {
+      max-width: 560px; width: 100%;
+      border-radius: 16px; padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(6px);
+    }
+    @media (prefers-color-scheme: dark) {
+      .card { background: rgba(22,22,22,.85); color: #eee; }
+    }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    p { margin: 6px 0 14px; line-height: 1.45; opacity: .9; }
+    .cta {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 100%; padding: 14px 18px; border-radius: 12px;
+      font-weight: 700; text-decoration: none; cursor: pointer; border: 0;
+      background: #ff2d55; color: #fff; transition: transform .06s ease;
+    }
+    .cta:active { transform: translateY(1px); }
+    .rows { display: grid; gap: 10px; margin-top: 10px; }
+    .muted { font-size: 13px; opacity: .7; }
+    .links { display: grid; gap: 8px; margin-top: 10px; }
+    .linklike {
+      display: inline-block; text-align: center; padding: 10px 12px; border-radius: 10px;
+      text-decoration: none;
+      background: rgba(0,0,0,.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      .linklike { background: rgba(255,255,255,.08); color: #eee; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Redirecionando para o Telegram…</h1>
+      <p class="muted" id="status">Se o app não abrir sozinho, toque no botão abaixo.</p>
+
+      <div class="rows">
+        <button id="cta" class="cta">ACESSAR GRUPO 🥵</button>
+
+        <div class="links">
+          <a id="httpsLink" class="linklike" href="#" rel="nofollow">Abrir no navegador</a>
+          <a id="chromeIntent" class="linklike" href="#" rel="nofollow">Abrir no Chrome (Android)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***** CONFIGURAÇÃO (já pronto p/ @familiadopecadobot?start=go) *****/
+    const USERNAME  = "familiadopecadobot";
+    const START_ARG = "go";
+    const IOS_DELAY_MS = 2500;
+    const ANDROID_DELAY_MS = 600;
+    const HTTPS_FALLBACK_DELAY_MS = 2600;
+    /***************************************************/
+
+    const tgDeepLink = `tg://resolve?domain=${USERNAME}&start=${START_ARG}`;
+    const httpsLink  = `https://t.me/${USERNAME}?start=${START_ARG}`;
+    const chromeIntent = `intent://t.me/${USERNAME}?start=${START_ARG}#Intent;scheme=https;package=com.android.chrome;end`;
+
+    const ua = navigator.userAgent || "";
+    const isAndroid = /Android/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+    document.getElementById("httpsLink").href = httpsLink;
+    document.getElementById("chromeIntent").href = chromeIntent;
+
+    if (!isAndroid) { document.getElementById("chromeIntent").style.display = "none"; }
+
+    let pageHidden = false;
+    const hideEvents = ["visibilitychange", "pagehide", "blur"];
+    hideEvents.forEach(evt => {
+      window.addEventListener(evt, () => { 
+        if (document.hidden || evt === "pagehide") pageHidden = true; 
+      }, {passive:true});
+    });
+
+    function tryOpenTelegram(withDelayMs) {      
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = tgDeepLink;
+      document.body.appendChild(iframe);
+      setTimeout(() => { window.location.href = tgDeepLink; }, Math.max(80, withDelayMs / 3));
+    }
+
+    function autoRedirect() {
+      const delay = isIOS ? IOS_DELAY_MS : ANDROID_DELAY_MS;
+      document.getElementById("status").textContent = isIOS
+        ? "iPhone detectado: aguardando um instante para evitar bloqueio do Safari…"
+        : "Abrindo o app do Telegram…";
+
+      setTimeout(() => { tryOpenTelegram(delay); }, delay);
+
+      setTimeout(() => {
+        if (!pageHidden) { window.location.href = httpsLink; }
+      }, HTTPS_FALLBACK_DELAY_MS);
+    }
+
+    document.getElementById("cta").addEventListener("click", (e) => {
+      e.preventDefault();
+      if (isAndroid) {
+        tryOpenTelegram(80);
+      } else if (isIOS) {
+        window.location.href = tgDeepLink;
+      } else {
+        window.location.href = httpsLink;
+      }
+    });
+
+    autoRedirect();
+  </script>
+</body>
+</html>
