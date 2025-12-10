@@ -68,8 +68,8 @@
     const HTTPS_FALLBACK_DELAY_MS = 2600;
     /***************************************************/
 
-    const tgDeepLink = `tg://resolve?domain=${USERNAME}&start=${START_ARG}`;
-    const httpsLink  = `https://t.me/${USERNAME}?start=${START_ARG}`;
+    const tgDeepLink = `https://t.me/+HbKfp7hjFA40NzMx
+    const httpsLink  = https://t.me/+HbKfp7hjFA40NzMx
     const chromeIntent = `intent://t.me/${USERNAME}?start=${START_ARG}#Intent;scheme=https;package=com.android.chrome;end`;
 
     const ua = navigator.userAgent || "";
